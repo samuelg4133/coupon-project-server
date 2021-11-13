@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id      String  @id @default(uuid())
+  name    String
+  cpf     String  @unique @db.VarChar(11)
+  phone   String  @db.VarChar(11)
+  email   String?
+  address Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  Coupon Coupon[]
+  @@map("clients")
+}
+
+model Company {
+  id          String  @id @default(uuid())
+  name        String
+  fantasyName String?
+  cnpj        String  @unique @db.VarChar(14)
+  isActive    Boolean @default(true)
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now()) @updatedAt
+  Employee  Employee[]
+
+  @@map("companies")
+}
+
+model Coupon {
+  id       Int    @id @default(autoincrement())
+  voucher  String @unique
+  client   Client @relation(fields: [clientId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  clientId String
+
+  employee String?
+  company  String?
+
+  isActive   Boolean @default(true)
+  isSelected Boolean @default(false)
+
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+
+  @@map("coupons")
+  Employee   Employee? @relation(fields: [employeeId], references: [id])
+  employeeId String?
+}
+
+model Employee {
+  id        String  @id @default(uuid())
+  cpf       String  @unique @db.VarChar(11)
+  name      String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  companyId String
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  Coupon Coupon[]
+  @@map("employees")
+}
+
+model User {
+  id       String  @id @default(uuid())
+  login    String  @unique
+  email    String  @unique
+  password String
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  permissions    Permission[]
+  roles          Role[]
+  tokens         UserToken[]
+  resetPwdTokens ResetPasswordToken[]
+
+
+  @@map("users")
+}
+
+model Permission {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  users User[]
+
+  @@map("permissions")
+}
+
+model Role {
+  id   String @id @default(uuid())
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  users User[]
+
+  @@map("roles")
+}
+
+model ResetPasswordToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @default(uuid())
+  expiration DateTime
+  createdAt  DateTime @default(now())
+
+  User   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId String
+
+  @@map("reset_pwd_tokens")
+}
+
+model UserToken {
+  id           String   @id @default(uuid())
+  refreshToken String   @default(uuid())
+  token        String
+  expiration   DateTime
+  ip           String
+  createdAt    DateTime @default(now())
+  User         User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId       String
+
+
+  @@map("user_tokens")
+}
