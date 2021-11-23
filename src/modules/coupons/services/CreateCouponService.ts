@@ -1,6 +1,6 @@
 import { Coupon } from ".prisma/client";
-import SMS from "@config/sms";
-import Notification from "@modules/notifications/infra/mongoose/Notification";
+// import SMS from "@config/sms";
+// import Notification from "@modules/notifications/infra/mongoose/Notification";
 import Voucher from "@modules/vouchers/infra/mongoose/schemas/Voucher";
 import Error from "@shared/core/Error";
 import Service from "@shared/core/Service";
@@ -112,23 +112,23 @@ export class CreateCouponService implements Service<Request, Coupon> {
         });
       }
 
-      const message = `Seu código ${voucher.toUpperCase()} foi cadastrado com sucesso na Promoção Natal Premiado 2021!`;
-      const phoneNumber = `+55${filteredClientPhone}`;
+      // const message = `Seu código ${voucher.toUpperCase()} foi cadastrado com sucesso na Promoção Natal Premiado 2021!`;
+      // const phoneNumber = `+55${filteredClientPhone}`;
 
-      SMS.publish(
-        {
-          Message: message,
-          PhoneNumber: phoneNumber,
-        },
-        (err, _) => {
-          if (err) throw new Error({ message: err });
-        }
-      );
+      // SMS.publish(
+      //   {
+      //     Message: message,
+      //     PhoneNumber: phoneNumber,
+      //   },
+      //   (err, _) => {
+      //     if (err) throw new Error({ message: err });
+      //   }
+      // );
 
-      await Notification.create({
-        message,
-        phoneNumber,
-      });
+      // await Notification.create({
+      //   message,
+      //   phoneNumber,
+      // });
 
       return coupon;
     } catch {
