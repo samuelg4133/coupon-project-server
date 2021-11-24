@@ -20,7 +20,7 @@ export class PrismaCouponRepository implements ICouponRepository {
           isSelected: false,
         },
         orderBy: {
-          createdAt: "asc",
+          voucher: "asc",
         },
         include: {
           client: true,
