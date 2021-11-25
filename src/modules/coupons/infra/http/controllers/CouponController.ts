@@ -4,13 +4,14 @@ import { Request, Response } from "express";
 
 export class CouponController {
   public async index(req: Request, res: Response) {
-    const { per_page: perPage, page: page, name: name } = req.query;
+    const { per_page: perPage, page: page, filter: filter } = req.query;
 
     const actualCoupons = new ListActualCouponsService();
 
     const result = await actualCoupons.execute({
       page: Number(page),
       perPage: Number(perPage),
+      filter: String(filter).toUpperCase(),
     });
 
     return res.json(result);

@@ -14,6 +14,7 @@ couponRouter.get(
     [Segments.QUERY]: {
       per_page: Joi.number().required(),
       page: Joi.number().required(),
+      filter: Joi.string(),
     },
   }),
   ensureAuthenticated,
