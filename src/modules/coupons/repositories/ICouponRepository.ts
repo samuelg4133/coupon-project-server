@@ -1,14 +1,24 @@
-import { Coupon } from "@prisma/client";
-import { PaginateAndFilterDTO, PaginateCouponDTO } from "../dtos/CouponDTO";
+import { Client, Coupon } from "@prisma/client";
+import { FilterDTO, PaginateCouponDTO } from "../dtos/CouponDTO";
 
 export interface ICouponRepository {
+  findAll(): Promise<
+    (Coupon & {
+      client: Client;
+    })[]
+  >;
+  findAndFilter(query: string): Promise<
+    (Coupon & {
+      client: Client;
+    })[]
+  >;
   paginate(data: PaginateCouponDTO): Promise<{
     coupons: (Coupon & {
       client: { name: string };
     })[];
     total: number;
   }>;
-  paginateAndFilter(data: PaginateAndFilterDTO): Promise<{
+  paginateAndFilter(data: FilterDTO): Promise<{
     coupons: (Coupon & {
       client: { name: string };
     })[];

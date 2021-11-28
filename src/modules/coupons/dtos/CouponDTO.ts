@@ -3,6 +3,6 @@ export interface PaginateCouponDTO {
   page: number;
 }
 
-export interface PaginateAndFilterDTO extends PaginateCouponDTO {
+export interface FilterDTO extends PaginateCouponDTO {
   query: string;
 }

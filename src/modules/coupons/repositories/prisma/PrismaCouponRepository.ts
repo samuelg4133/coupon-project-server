@@ -1,13 +1,66 @@
 import { Coupon } from ".prisma/client";
-import {
-  PaginateAndFilterDTO,
-  PaginateCouponDTO,
-} from "@modules/coupons/dtos/CouponDTO";
+import { FilterDTO, PaginateCouponDTO } from "@modules/coupons/dtos/CouponDTO";
+import { Client } from "@prisma/client";
 
 import { prisma } from "@shared/infra/prisma/client";
 import { ICouponRepository } from "../ICouponRepository";
 
 export class PrismaCouponRepository implements ICouponRepository {
+  public async findAndFilter(
+    query: string
+  ): Promise<(Coupon & { client: Client })[]> {
+    const coupons = await prisma.coupon.findMany({
+      where: {
+        isActive: true,
+        isSelected: false,
+        OR: [
+          {
+            voucher: query,
+          },
+          {
+            client: {
+              cpf: query,
+            },
+          },
+          {
+            client: {
+              name: {
+                contains: query,
+              },
+            },
+          },
+        ],
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+      include: {
+        client: true,
+      },
+    });
+
+    return coupons;
+  }
+  public async findAll(): Promise<
+    (Coupon & {
+      client: Client;
+    })[]
+  > {
+    const coupons = await prisma.coupon.findMany({
+      where: {
+        isActive: true,
+        isSelected: false,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+      include: {
+        client: true,
+      },
+    });
+
+    return coupons;
+  }
   async paginate({ page, perPage }: PaginateCouponDTO): Promise<{
     coupons: (Coupon & {
       client: { name: string };
@@ -40,11 +93,7 @@ export class PrismaCouponRepository implements ICouponRepository {
     return { coupons, total };
   }
 
-  public async paginateAndFilter({
-    perPage,
-    page,
-    query,
-  }: PaginateAndFilterDTO): Promise<{
+  public async paginateAndFilter({ perPage, page, query }: FilterDTO): Promise<{
     coupons: (Coupon & {
       client: { name: string };
     })[];
