@@ -21,15 +21,6 @@ export class CreateCouponReportService implements Service<void, void> {
     const coupons = await this._couponRepository.findAll();
     const worksheet = this._workbook.addWorksheet("dados");
 
-    //HEADERS
-    worksheet.getCell(`A1`).value = "CODIGO";
-    worksheet.getCell(`B1`).value = "CPF";
-    worksheet.getCell(`C1`).value = "NOME";
-    worksheet.getCell(`D1`).value = "TELEFONE";
-    worksheet.getCell(`E1`).value = "EMPRESA";
-    worksheet.getCell(`F1`).value = "VENDEDOR";
-    worksheet.getCell(`G1`).value = "DATA DE CRIAÇÃO";
-
     for (let i = 1; i <= coupons.length; i++) {
       worksheet.getCell(`A${i + 1}`).value = coupons[i - 1].voucher;
       worksheet.getCell(`B${i + 1}`).value = coupons[i - 1].client.cpf;

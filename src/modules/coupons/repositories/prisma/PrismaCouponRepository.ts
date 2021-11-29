@@ -12,7 +12,6 @@ export class PrismaCouponRepository implements ICouponRepository {
     const coupons = await prisma.coupon.findMany({
       where: {
         isActive: true,
-        isSelected: false,
         OR: [
           {
             voucher: query,
@@ -49,7 +48,6 @@ export class PrismaCouponRepository implements ICouponRepository {
     const coupons = await prisma.coupon.findMany({
       where: {
         isActive: true,
-        isSelected: false,
       },
       orderBy: {
         createdAt: "asc",
@@ -73,7 +71,6 @@ export class PrismaCouponRepository implements ICouponRepository {
         skip: (page - 1) * perPage,
         where: {
           isActive: true,
-          isSelected: false,
         },
         orderBy: {
           createdAt: "asc",
@@ -85,7 +82,6 @@ export class PrismaCouponRepository implements ICouponRepository {
       prisma.coupon.count({
         where: {
           isActive: true,
-          isSelected: false,
         },
       }),
     ]);
@@ -105,7 +101,6 @@ export class PrismaCouponRepository implements ICouponRepository {
         skip: (page - 1) * perPage,
         where: {
           isActive: true,
-          isSelected: false,
           OR: [
             {
               voucher: query,
@@ -134,7 +129,6 @@ export class PrismaCouponRepository implements ICouponRepository {
       prisma.coupon.count({
         where: {
           isActive: true,
-          isSelected: false,
           OR: [
             {
               voucher: query,
@@ -152,6 +146,46 @@ export class PrismaCouponRepository implements ICouponRepository {
               },
             },
           ],
+        },
+      }),
+    ]);
+
+    return { coupons, total };
+  }
+
+  public async paginateAndFilterByCPF({
+    page,
+    perPage,
+    query,
+  }: FilterDTO): Promise<{
+    coupons: (Coupon & { client: { name: string } })[];
+    total: number;
+  }> {
+    const [coupons, total] = await prisma.$transaction([
+      prisma.coupon.findMany({
+        take: perPage,
+        skip: (page - 1) * perPage,
+        where: {
+          client: {
+            cpf: query,
+          },
+          isActive: true,
+          isSelected: false,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        include: {
+          client: true,
+        },
+      }),
+      prisma.coupon.count({
+        where: {
+          client: {
+            cpf: query,
+          },
+          isActive: true,
+          isSelected: false,
         },
       }),
     ]);

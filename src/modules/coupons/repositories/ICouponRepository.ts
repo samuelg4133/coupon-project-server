@@ -24,4 +24,10 @@ export interface ICouponRepository {
     })[];
     total: number;
   }>;
+  paginateAndFilterByCPF(data: FilterDTO): Promise<{
+    coupons: (Coupon & {
+      client: { name: string };
+    })[];
+    total: number;
+  }>;
 }
